@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reserva de Canchas Greenpoint</title>
+    <title>Reserva de Turnos</title>
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -22,8 +22,8 @@
         }
         .btn-vista.activo { background-color: #3b82f6; border-color: #3b82f6; }
 
-        /* Vista Jugador */
-        .vista-jugador {
+        /* Vista Cliente */
+        .vista-cliente {
             background-color: #1e252d; width: 100%; max-width: 400px;
             border-radius: 12px; padding: 20px; box-sizing: border-box;
         }
@@ -56,10 +56,10 @@
         .punto-verde { height: 10px; width: 10px; background-color: #10b981; border-radius: 50%; margin-right: 15px; min-width: 10px; }
         .hora { font-weight: bold; margin-right: 8px; }
         .texto-disponible { color: #d1d5db; font-size: 0.9em; }
-        .texto-canchas-disp { font-size: 0.8em; color: #10b981; margin-left: auto; font-weight: bold;}
+        .texto-sillas-disp { font-size: 0.8em; color: #10b981; margin-left: auto; font-weight: bold;}
 
-        /* Vista Club */
-        .vista-club {
+        /* Vista Turnero */
+        .vista-turnero {
             display: none; background-color: #1e252d; width: 100%; max-width: 900px;
             border-radius: 12px; padding: 20px; box-sizing: border-box;
         }
@@ -111,56 +111,56 @@
 <body>
 
     <div class="controles-vista">
-        <button id="btn-jugador" class="btn-vista activo" onclick="window.cambiarVista('jugador')">📱 Vista Jugadores</button>
-        <button id="btn-club" class="btn-vista" onclick="window.cambiarVista('club')">💻 Vista Club</button>
+        <button id="btn-cliente" class="btn-vista activo" onclick="window.cambiarVista('cliente')">📱 Vista Clientes</button>
+        <button id="btn-turnero" class="btn-vista" onclick="window.cambiarVista('turnero')">💻 Vista Turnero</button>
     </div>
 
-    <div id="pantalla-jugador" class="vista-jugador">
-        <h2 style="margin-top: 0; margin-bottom: 20px;">Reserva de canchas</h2>
-        <div id="calendario-jugador" class="calendario-strip"></div>
+    <div id="pantalla-cliente" class="vista-cliente">
+        <h2 style="margin-top: 0; margin-bottom: 20px;">Reserva de turnos</h2>
+        <div id="calendario-cliente" class="calendario-strip"></div>
         <div class="sub-header">
             <span>Horarios Disponibles</span>
-            <span>Greenpoint</span>
+            <span>Local</span>
         </div>
         <div id="lista-horarios">Cargando horarios...</div>
     </div>
 
-    <div id="pantalla-club" class="vista-club">
+    <div id="pantalla-turnero" class="vista-turnero">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 style="margin: 0;">Panel de Control</h2>
             <div style="display: flex; gap: 15px;">
-                <button onclick="window.abrirModalMetricas()" style="background: none; border: none; font-size: 1.5em; cursor: pointer; color: #9ca3af; transition: 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#9ca3af'" title="Métricas del Club">📊</button>
-                <button onclick="window.abrirModalConfig()" style="background: none; border: none; font-size: 1.5em; cursor: pointer; color: #9ca3af; transition: 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#9ca3af'" title="Configuración del Club">⚙️</button>
+                <button onclick="window.abrirModalMetricas()" style="background: none; border: none; font-size: 1.5em; cursor: pointer; color: #9ca3af; transition: 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#9ca3af'" title="Métricas del Turnero">📊</button>
+                <button onclick="window.abrirModalConfig()" style="background: none; border: none; font-size: 1.5em; cursor: pointer; color: #9ca3af; transition: 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#9ca3af'" title="Configuración del Turnero">⚙️</button>
             </div>
         </div>
-        <div id="calendario-club" class="calendario-strip"></div>
-        <div id="lista-reservas-club"></div>
+        <div id="calendario-turnero" class="calendario-strip"></div>
+        <div id="lista-reservas-turnero"></div>
     </div>
 
-    <div id="modal-reserva-jugador" class="modal-overlay">
+    <div id="modal-reserva-cliente" class="modal-overlay">
         <div class="modal-content">
             <h3 style="margin: 0; margin-bottom: 5px;">Confirmar Reserva</h3>
             <p style="margin: 0; color: #9ca3af; margin-bottom: 15px;">Fecha: <strong id="reserva-fecha-display" style="color:white;"></strong><br>Horario: <strong id="reserva-hora-display" style="color:white;"></strong></p>
             
             <div style="text-align: left; display: flex; flex-direction: column; gap: 15px;">
                 <div>
-                    <label style="font-size: 0.9em; color: #d1d5db; font-weight: bold;">1. Elige tu cancha:</label>
-                    <select id="select-cancha-modal" class="input-form" style="margin-top: 5px;"></select>
+                    <label style="font-size: 0.9em; color: #d1d5db; font-weight: bold;">1. Elige tu silla:</label>
+                    <select id="select-silla-modal" class="input-form" style="margin-top: 5px;"></select>
                 </div>
                 <div>
                     <label style="font-size: 0.9em; color: #d1d5db; font-weight: bold;">2. Nombre y Apellido:</label>
-                    <input type="text" id="input-nombre-jugador" class="input-form" placeholder="Ej: Franco Aramayo" style="margin-top: 5px;">
+                    <input type="text" id="input-nombre-cliente" class="input-form" placeholder="Ej: Juan Pérez" style="margin-top: 5px;">
                 </div>
             </div>
 
-            <button class="btn-modal btn-guardar" style="margin-top: 20px;" onclick="window.confirmarReservaJugador()">Confirmar Reserva</button>
-            <button class="btn-modal btn-cerrar" style="margin-top: 0;" onclick="window.cerrarModalReservaJugador()">Cancelar</button>
+            <button class="btn-modal btn-guardar" style="margin-top: 20px;" onclick="window.confirmarReservaCliente()">Confirmar Reserva</button>
+            <button class="btn-modal btn-cerrar" style="margin-top: 0;" onclick="window.cerrarModalReservaCliente()">Cancelar</button>
         </div>
     </div>
 
     <div id="modal-config" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="margin: 0; margin-bottom: 15px; border-bottom: 1px solid #44505d; padding-bottom: 10px;">⚙️ Configuración del Club</h3>
+            <h3 style="margin: 0; margin-bottom: 15px; border-bottom: 1px solid #44505d; padding-bottom: 10px;">⚙️ Configuración del Turnero</h3>
             <div style="text-align: left; display: flex; flex-direction: column; gap: 15px;">
                 <div style="display: flex; gap: 10px; justify-content: space-between;">
                     <div style="flex: 1;"><label style="font-size: 0.9em; color: #d1d5db;">Primer Turno:</label><input type="time" id="input-primer-turno" class="input-form" style="margin-top: 4px;"></div>
@@ -168,14 +168,14 @@
                 </div>
                 <div style="display: flex; gap: 10px; justify-content: space-between;">
                     <div style="flex: 1;"><label style="font-size: 0.9em; color: #d1d5db;">Precio ($):</label><input type="number" id="input-precio" step="500" class="input-form" style="margin-top: 4px;"></div>
-                    <div style="flex: 1;"><label style="font-size: 0.9em; color: #d1d5db;">Canchas:</label><input type="number" id="input-canchas" min="1" max="20" class="input-form" style="margin-top: 4px;"></div>
+                    <div style="flex: 1;"><label style="font-size: 0.9em; color: #d1d5db;">Sillas:</label><input type="number" id="input-sillas" min="1" max="20" class="input-form" style="margin-top: 4px;"></div>
                 </div>
                 <div>
                     <label style="font-size: 0.9em; color: #d1d5db;">Duración Standard:</label>
                     <select id="input-duracion" class="input-form" style="margin-top: 4px;">
+                        <option value="30">30 Minutos (0.5h)</option>
                         <option value="60">60 Minutos (1h)</option>
                         <option value="90">90 Minutos (1.5h)</option>
-                        <option value="120">120 Minutos (2h)</option>
                     </select>
                 </div>
             </div>
@@ -240,9 +240,9 @@
         let fechaSeleccionada = fechasValidas[0]; 
 
         function renderizarCalendarios() {
-            const calJugador = document.getElementById('calendario-jugador');
-            const calClub = document.getElementById('calendario-club');
-            calJugador.innerHTML = ''; calClub.innerHTML = '';
+            const calCliente = document.getElementById('calendario-cliente');
+            const calTurnero = document.getElementById('calendario-turnero');
+            calCliente.innerHTML = ''; calTurnero.innerHTML = '';
             const diasCortos = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
             fechasValidas.forEach((fechaISO, index) => {
@@ -253,8 +253,8 @@
                 const esActivo = fechaISO === fechaSeleccionada ? 'activo' : '';
 
                 const htmlDia = `<div class="dia-item ${esActivo}" onclick="window.seleccionarFecha('${fechaISO}')"><span class="dia-nombre">${nombreDia}</span><span class="dia-numero">${numeroDia}</span></div>`;
-                calJugador.innerHTML += htmlDia;
-                calClub.innerHTML += htmlDia;
+                calCliente.innerHTML += htmlDia;
+                calTurnero.innerHTML += htmlDia;
             });
         }
 
@@ -273,8 +273,8 @@
         let primerTurno = "08:00"; 
         let ultimoTurno = "21:30";   
         let precioGlobal = "15000"; 
-        let cantidadCanchasGlobal = 1; 
-        let duracionGlobal = 90; 
+        let cantidadSillasGlobal = 1; 
+        let duracionGlobal = 60; 
         let reservasGlobales = [];
         let reservaSeleccionadaId = null; 
         let reservaEnProcesoHora = null;
@@ -292,10 +292,10 @@
         }
 
         window.cambiarVista = function(vista) {
-            document.getElementById('pantalla-jugador').style.display = vista === 'jugador' ? 'block' : 'none';
-            document.getElementById('pantalla-club').style.display = vista === 'club' ? 'block' : 'none';
-            document.getElementById('btn-jugador').classList.toggle('activo', vista === 'jugador');
-            document.getElementById('btn-club').classList.toggle('activo', vista === 'club');
+            document.getElementById('pantalla-cliente').style.display = vista === 'cliente' ? 'block' : 'none';
+            document.getElementById('pantalla-turnero').style.display = vista === 'turnero' ? 'block' : 'none';
+            document.getElementById('btn-cliente').classList.toggle('activo', vista === 'cliente');
+            document.getElementById('btn-turnero').classList.toggle('activo', vista === 'turnero');
         }
 
         window.abrirModalConfig = function() { document.getElementById('modal-config').style.display = 'flex'; }
@@ -395,12 +395,12 @@
             contenedor.innerHTML = html;
         }
 
-        window.abrirModalReservaJugador = function(hora, canchaPredeterminada = null) {
+        window.abrirModalReservaCliente = function(hora, sillaPredeterminada = null) {
             
             let minInicio = window.aMinutos(hora);
             let minUltimo = window.aMinutos(ultimoTurno);
             if (minInicio > minUltimo) {
-                alert("Este horario supera el límite del último turno permitido para el club.");
+                alert("Este horario supera el límite del último turno permitido para el turnero.");
                 return;
             }
 
@@ -415,7 +415,7 @@
             let bloquesNuevos = [];
             for(let b=0; b < numBloquesNuevo; b++) { bloquesNuevos.push(window.sumarMinutos(hora, b * 30)); }
 
-            let canchasOcupadas = new Set();
+            let sillasOcupadas = new Set();
             
             reservasGlobales.forEach(r => {
                 let aplica = false;
@@ -423,55 +423,55 @@
                 if (r.fijo === true && window.getDayOfWeekFromDate(r.fecha) === dowNumSelected) aplica = true;
 
                 if (aplica) {
-                    let resDuracion = r.duracion || 90;
+                    let resDuracion = r.duracion || 60;
                     let numBloquesRes = resDuracion / 30;
                     let bloquesRes = [];
                     for(let b=0; b < numBloquesRes; b++) { bloquesRes.push(window.sumarMinutos(r.hora, b * 30)); }
                     
                     let intersect = bloquesNuevos.some(b => bloquesRes.includes(b));
-                    if(intersect) canchasOcupadas.add(parseInt(r.cancha || "1"));
+                    if(intersect) sillasOcupadas.add(parseInt(r.silla || "1"));
                 }
             });
 
-            const selectCancha = document.getElementById('select-cancha-modal');
-            selectCancha.innerHTML = '';
-            let canchasLibresCount = 0;
-            for(let c = 1; c <= cantidadCanchasGlobal; c++) {
-                if(!canchasOcupadas.has(c)) { 
-                    selectCancha.innerHTML += `<option value="${c}" style="color: black;">Cancha ${c}</option>`; 
-                    canchasLibresCount++;
+            const selectSilla = document.getElementById('select-silla-modal');
+            selectSilla.innerHTML = '';
+            let sillasLibresCount = 0;
+            for(let c = 1; c <= cantidadSillasGlobal; c++) {
+                if(!sillasOcupadas.has(c)) { 
+                    selectSilla.innerHTML += `<option value="${c}" style="color: black;">Silla ${c}</option>`; 
+                    sillasLibresCount++;
                 }
             }
 
-            if (canchasLibresCount === 0) {
-                alert("No hay canchas con tiempo suficiente libre a partir de esa hora.");
+            if (sillasLibresCount === 0) {
+                alert("No hay sillas con tiempo suficiente libre a partir de esa hora.");
                 return;
             }
 
-            if (canchaPredeterminada && !canchasOcupadas.has(parseInt(canchaPredeterminada))) {
-                selectCancha.value = canchaPredeterminada;
+            if (sillaPredeterminada && !sillasOcupadas.has(parseInt(sillaPredeterminada))) {
+                selectSilla.value = sillaPredeterminada;
             }
 
-            document.getElementById('input-nombre-jugador').value = ""; 
-            document.getElementById('modal-reserva-jugador').style.display = 'flex';
+            document.getElementById('input-nombre-cliente').value = ""; 
+            document.getElementById('modal-reserva-cliente').style.display = 'flex';
         }
 
-        window.cerrarModalReservaJugador = function() { reservaEnProcesoHora = null; document.getElementById('modal-reserva-jugador').style.display = 'none'; }
+        window.cerrarModalReservaCliente = function() { reservaEnProcesoHora = null; document.getElementById('modal-reserva-cliente').style.display = 'none'; }
 
-        window.confirmarReservaJugador = async function() {
-            const inputNombre = document.getElementById('input-nombre-jugador').value;
-            const selectCanchaModal = document.getElementById('select-cancha-modal').value;
+        window.confirmarReservaCliente = async function() {
+            const inputNombre = document.getElementById('input-nombre-cliente').value;
+            const selectSillaModal = document.getElementById('select-silla-modal').value;
 
             if (!inputNombre || inputNombre.trim() === "") { alert("Por favor, ingresa tu Nombre y Apellido."); return; }
 
             try {
                 await addDoc(collection(db, "reservas"), { 
-                    fecha: fechaSeleccionada, hora: reservaEnProcesoHora, cancha: selectCanchaModal, jugador: inputNombre, 
+                    fecha: fechaSeleccionada, hora: reservaEnProcesoHora, silla: selectSillaModal, cliente: inputNombre, 
                     duracion: duracionGlobal, 
                     fechaRegistro: new Date(), asistencia: false, pagado: false, fijo: false      
                 });
                 alert("¡Reserva guardada con éxito!");
-                window.cerrarModalReservaJugador();
+                window.cerrarModalReservaCliente();
             } catch (error) { alert("Hubo un error de conexión."); }
         }
 
@@ -479,14 +479,14 @@
             const inputPrimero = document.getElementById('input-primer-turno').value;
             const inputUltimo = document.getElementById('input-ultimo-turno').value;
             const inputPrecio = document.getElementById('input-precio').value;
-            const inputCanchasNum = document.getElementById('input-canchas').value; 
+            const inputSillasNum = document.getElementById('input-sillas').value; 
             const inputDuracion = document.getElementById('input-duracion').value; 
             
-            if(inputPrimero && inputUltimo && inputPrecio && inputCanchasNum && inputDuracion) {
+            if(inputPrimero && inputUltimo && inputPrecio && inputSillasNum && inputDuracion) {
                 try { 
-                    await setDoc(doc(db, "configuracion", "club"), { 
+                    await setDoc(doc(db, "configuracion", "turnero"), { 
                         primerTurno: inputPrimero, ultimoTurno: inputUltimo, 
-                        precioTurno: inputPrecio, canchas: inputCanchasNum,
+                        precioTurno: inputPrecio, sillas: inputSillasNum,
                         duracionTurno: parseInt(inputDuracion) 
                     }); 
                     window.cerrarModalConfig();
@@ -509,18 +509,18 @@
             }
         }
 
-        onSnapshot(doc(db, "configuracion", "club"), (documento) => {
+        onSnapshot(doc(db, "configuracion", "turnero"), (documento) => {
             if (documento.exists()) {
-                primerTurno = documento.data().primerTurno || documento.data().horaApertura || "08:00";
-                ultimoTurno = documento.data().ultimoTurno || documento.data().horaCierre || "21:30";
+                primerTurno = documento.data().primerTurno || "08:00";
+                ultimoTurno = documento.data().ultimoTurno || "21:30";
                 precioGlobal = documento.data().precioTurno || "15000";
-                cantidadCanchasGlobal = parseInt(documento.data().canchas) || 1; 
-                duracionGlobal = parseInt(documento.data().duracionTurno) || 90; 
+                cantidadSillasGlobal = parseInt(documento.data().sillas) || 1; 
+                duracionGlobal = parseInt(documento.data().duracionTurno) || 60; 
                 
                 document.getElementById('input-primer-turno').value = primerTurno;
                 document.getElementById('input-ultimo-turno').value = ultimoTurno;
                 document.getElementById('input-precio').value = precioGlobal;
-                document.getElementById('input-canchas').value = cantidadCanchasGlobal;
+                document.getElementById('input-sillas').value = cantidadSillasGlobal;
                 document.getElementById('input-duracion').value = duracionGlobal;
             }
             renderizarPantallas(); 
@@ -533,7 +533,7 @@
         });
 
         window.renderizarPantallas = function() {
-            // 1. VISTA JUGADOR
+            // 1. VISTA CLIENTE
             const contenedorHorarios = document.getElementById('lista-horarios');
             contenedorHorarios.innerHTML = '';
             
@@ -545,7 +545,7 @@
                 let bloquesNuevos = [];
                 for(let b=0; b < numBloquesNuevo; b++) { bloquesNuevos.push(window.sumarMinutos(hora, b * 30)); }
                 
-                let canchasOcupadas = new Set();
+                let sillasOcupadas = new Set();
                 
                 reservasGlobales.forEach(r => {
                     let aplica = false;
@@ -553,36 +553,36 @@
                     if (r.fijo === true && window.getDayOfWeekFromDate(r.fecha) === dowNumSelected) aplica = true;
 
                     if(aplica) {
-                        let resDuracion = r.duracion || 90;
+                        let resDuracion = r.duracion || 60;
                         let numBloquesRes = resDuracion / 30;
                         let bloquesRes = [];
                         for(let b=0; b < numBloquesRes; b++) { bloquesRes.push(window.sumarMinutos(r.hora, b * 30)); }
                         
                         let intersect = bloquesNuevos.some(b => bloquesRes.includes(b));
-                        if(intersect) { canchasOcupadas.add(parseInt(r.cancha || "1")); }
+                        if(intersect) { sillasOcupadas.add(parseInt(r.silla || "1")); }
                     }
                 });
 
-                let canchasLibres = cantidadCanchasGlobal - canchasOcupadas.size;
+                let sillasLibres = cantidadSillasGlobal - sillasOcupadas.size;
                 let hsTexto = duracionGlobal % 60 === 0 ? (duracionGlobal/60) : (duracionGlobal/60).toFixed(1);
 
-                if (canchasLibres > 0) {
+                if (sillasLibres > 0) {
                     const div = document.createElement('div'); div.className = 'turno-item';
-                    div.onclick = () => window.abrirModalReservaJugador(hora);
-                    let textoCanchas = canchasLibres === 1 ? "1 libre" : `${canchasLibres} libres`;
-                    div.innerHTML = `<span class="punto-verde"></span><span class="hora">${hora} hs | </span><span class="texto-disponible">Turno ${hsTexto} hs</span><span class="texto-canchas-disp">${textoCanchas}</span>`;
+                    div.onclick = () => window.abrirModalReservaCliente(hora);
+                    let textoSillas = sillasLibres === 1 ? "1 libre" : `${sillasLibres} libres`;
+                    div.innerHTML = `<span class="punto-verde"></span><span class="hora">${hora} hs | </span><span class="texto-disponible">Turno ${hsTexto} hs</span><span class="texto-sillas-disp">${textoSillas}</span>`;
                     contenedorHorarios.appendChild(div);
                 }
             });
 
-            // 2. VISTA CLUB
-            const contenedorClub = document.getElementById('lista-reservas-club');
-            contenedorClub.innerHTML = '';
+            // 2. VISTA TURNERO
+            const contenedorTurnero = document.getElementById('lista-reservas-turnero');
+            contenedorTurnero.innerHTML = '';
 
-            const dowNumSelectedClub = window.getDayOfWeekFromDate(fechaSeleccionada);
+            const dowNumSelectedTurnero = window.getDayOfWeekFromDate(fechaSeleccionada);
             let reservasAMostrar = reservasGlobales.filter(r => {
                 let fechaReserva = r.fecha || fechasValidas[0];
-                return fechaReserva === fechaSeleccionada || (r.fijo === true && window.getDayOfWeekFromDate(r.fecha) === dowNumSelectedClub);
+                return fechaReserva === fechaSeleccionada || (r.fijo === true && window.getDayOfWeekFromDate(r.fecha) === dowNumSelectedTurnero);
             });
 
             let minActual = window.aMinutos(primerTurno);
@@ -602,18 +602,18 @@
             }
             htmlGrilla += `</div>`;
 
-            for(let c = 1; c <= cantidadCanchasGlobal; c++) {
+            for(let c = 1; c <= cantidadSillasGlobal; c++) {
                 htmlGrilla += `<div style="flex: 1; min-width: 140px; border-right: 1px solid #2c3540; position: relative;">`;
-                htmlGrilla += `<div style="height: 40px; border-bottom: 1px solid #2c3540; text-align: center; line-height: 40px; font-weight: bold; background: #242c36; font-size: 0.9em;">Cancha ${c}</div>`;
+                htmlGrilla += `<div style="height: 40px; border-bottom: 1px solid #2c3540; text-align: center; line-height: 40px; font-weight: bold; background: #242c36; font-size: 0.9em;">Silla ${c}</div>`;
                 
-                let reservasCancha = reservasAMostrar.filter(r => (r.cancha || "1") == c);
-                let bloquesOcupadosCancha = new Set();
+                let reservasSilla = reservasAMostrar.filter(r => (r.silla || "1") == c);
+                let bloquesOcupadosSilla = new Set();
                 
-                reservasCancha.forEach(res => {
-                    let resDur = res.duracion || 90;
+                reservasSilla.forEach(res => {
+                    let resDur = res.duracion || 60;
                     let numBloques = resDur / 30;
                     for(let b=0; b < numBloques; b++) {
-                        bloquesOcupadosCancha.add(window.sumarMinutos(res.hora, b * 30));
+                        bloquesOcupadosSilla.add(window.sumarMinutos(res.hora, b * 30));
                     }
                 });
 
@@ -626,8 +626,8 @@
                     let borderStyle = esHoraEnPunto ? 'border-bottom: 1px dashed rgba(255,255,255,0.05);' : 'border-bottom: 1px solid #2c3540;';
                     
                     let htmlExtra = "";
-                    if (!bloquesOcupadosCancha.has(horaFormateada)) {
-                        htmlExtra = `class="celda-vacia-hover" style="height: 40px; ${borderStyle} box-sizing: border-box; cursor: pointer;" onclick="window.abrirModalReservaJugador('${horaFormateada}', '${c}')"`;
+                    if (!bloquesOcupadosSilla.has(horaFormateada)) {
+                        htmlExtra = `class="celda-vacia-hover" style="height: 40px; ${borderStyle} box-sizing: border-box; cursor: pointer;" onclick="window.abrirModalReservaCliente('${horaFormateada}', '${c}')"`;
                     } else {
                         htmlExtra = `style="height: 40px; ${borderStyle} box-sizing: border-box;"`;
                     }
@@ -635,12 +635,12 @@
                     htmlGrilla += `<div ${htmlExtra}></div>`;
                 }
 
-                reservasCancha.forEach(res => {
+                reservasSilla.forEach(res => {
                     let minRes = window.aMinutos(res.hora);
                     if (minRes < minActual && minFin > 1440) minRes += 1440;
                     
                     let offsetTop = ((minRes - minActual) / 30) * 40 + 40; 
-                    let resDur = res.duracion || 90;
+                    let resDur = res.duracion || 60;
                     let height = (resDur / 30) * 40; 
 
                     let extraClass = res.asistencia ? "asistio" : "";
@@ -648,13 +648,12 @@
                     let textoSaldo = res.pagado ? "✅" : "Pend";
                     let textoFijo = res.fijo === true ? ' 📌' : '';
                     
-                    // LÍNEA MODIFICADA: Se quitó el 📌 que estaba al lado de ${res.hora} hs
                     htmlGrilla += `
                         <div class="tarjeta-reserva-grilla ${extraClass}" onclick="window.abrirModal('${res.id}')" 
                              style="position: absolute; top: ${offsetTop}px; left: 4px; right: 4px; height: ${height - 6}px; 
                                     padding: 8px; font-size: 0.85em; overflow: hidden; border-radius: 6px; cursor: pointer; 
                                     box-shadow: 0 4px 6px rgba(0,0,0,0.4); display: flex; flex-direction: column; z-index: 10;">
-                            <span style="font-weight: 900; font-size: 1.1em; color: ${colorTexto}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${res.jugador}${textoFijo}</span>
+                            <span style="font-weight: 900; font-size: 1.1em; color: ${colorTexto}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${res.cliente}${textoFijo}</span>
                             <span style="margin-top: 4px; color: ${colorTexto}; opacity: 0.8; font-weight: 700;">${res.hora} hs</span>
                             <span style="margin-top: auto; font-weight: bold; color: ${colorTexto};">Pago: ${textoSaldo}</span>
                         </div>
@@ -665,7 +664,7 @@
             }
             htmlGrilla += `</div>`; 
 
-            contenedorClub.innerHTML = htmlGrilla;
+            contenedorTurnero.innerHTML = htmlGrilla;
         }
 
         renderizarCalendarios();
