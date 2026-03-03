@@ -3,108 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reserva de Turnos</title>
+    <title>Reserva de Turnos - Refined</title>
     <style>
+        /* Paleta de Colores Refinada (Madera + Gris Oscuro) */
+        :root {
+            --color-bg-darkest: #12151a;    /* Gris casi negro */
+            --color-bg-card: #1c2129;       /* Gris oscuro para contenedores */
+            --color-wood-medium: #734C32;   /* Marrón madera nogal */
+            --color-wood-dark: #4A3020;     /* Madera más oscura */
+            --color-border: #2c3540;        /* Borde gris */
+            --color-text-main: #ffffff;      /* Texto blanco */
+            --color-text-sub: #9ca3af;       /* Texto gris */
+        }
+
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #171d24; 
-            color: #ffffff; 
+            background-color: var(--color-bg-darkest); 
+            color: var(--color-text-main); 
             margin: 0; 
             padding: 20px; 
             display: flex;
             flex-direction: column;
             align-items: center;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
+
         .controles-vista { display: flex; gap: 15px; margin-bottom: 30px; }
         .btn-vista {
-            background-color: #2c3540; color: white; border: 1px solid #44505d;
-            padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;
+            background-color: var(--color-bg-darkest); color: var(--color-text-sub); border: 1px solid var(--color-border);
+            padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.2s;
         }
-        .btn-vista.activo { background-color: #3b82f6; border-color: #3b82f6; }
+        .btn-vista:hover { border-color: var(--color-wood-medium); color: var(--color-text-main); }
+        .btn-vista.activo { background-color: var(--color-wood-medium); border-color: var(--color-wood-medium); color: var(--color-text-main); }
 
         /* Vista Cliente */
         .vista-cliente {
-            background-color: #1e252d; width: 100%; max-width: 400px;
+            background-color: var(--color-bg-card); width: 100%; max-width: 400px;
             border-radius: 12px; padding: 20px; box-sizing: border-box;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
         
         .calendario-strip {
-            display: flex; overflow-x: auto; gap: 10px; padding-bottom: 12px; margin-bottom: 15px; border-bottom: 1px solid #2c3540;
+            display: flex; overflow-x: auto; gap: 10px; padding-bottom: 12px; margin-bottom: 15px; border-bottom: 1px solid var(--color-border);
         }
         .calendario-strip::-webkit-scrollbar { height: 6px; }
-        .calendario-strip::-webkit-scrollbar-thumb { background: #44505d; border-radius: 4px; }
+        .calendario-strip::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
         
         .dia-item {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            min-width: 65px; padding: 12px 8px; background-color: #242c36; border-radius: 10px;
+            min-width: 65px; padding: 12px 8px; background-color: var(--color-bg-darkest); border-radius: 10px;
             cursor: pointer; border: 1px solid transparent; transition: 0.2s;
         }
-        .dia-item:hover { background-color: #2c3540; }
-        .dia-item.activo { background-color: #3b82f6; border-color: #3b82f6; color: white; transform: scale(1.05); }
-        .dia-nombre { font-size: 0.8em; color: #9ca3af; text-transform: uppercase; font-weight: bold;}
-        .dia-item.activo .dia-nombre { color: #e5e7eb; }
+        .dia-item:hover { border-color: var(--color-wood-dark); }
+        .dia-item.activo { background-color: var(--color-wood-medium); border-color: var(--color-wood-medium); color: var(--color-text-main); transform: scale(1.05); }
+        .dia-nombre { font-size: 0.8em; color: var(--color-text-sub); text-transform: uppercase; font-weight: bold;}
+        .dia-item.activo .dia-nombre { color: rgba(255,255,255,0.8); }
         .dia-numero { font-size: 1.4em; font-weight: bold; margin-top: 4px; }
 
-        .sub-header { display: flex; justify-content: space-between; align-items: center; color: #9ca3af; font-size: 0.9em; padding-bottom: 10px; border-bottom: 1px solid #2c3540; margin-bottom: 10px; font-weight: bold;}
+        .sub-header { display: flex; justify-content: space-between; align-items: center; color: var(--color-text-sub); font-size: 0.9em; padding-bottom: 10px; border-bottom: 1px solid var(--color-border); margin-bottom: 10px; font-weight: bold;}
         
         #lista-horarios { max-height: 500px; overflow-y: auto; padding-right: 5px; }
         #lista-horarios::-webkit-scrollbar { width: 6px; }
-        #lista-horarios::-webkit-scrollbar-thumb { background: #44505d; border-radius: 4px; }
+        #lista-horarios::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
 
-        .turno-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #2c3540; cursor: pointer; transition: 0.2s; }
-        .turno-item:hover { background-color: #242c36; }
-        .punto-verde { height: 10px; width: 10px; background-color: #10b981; border-radius: 50%; margin-right: 15px; min-width: 10px; }
+        .turno-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--color-border); cursor: pointer; transition: 0.2s; }
+        .turno-item:hover { background-color: var(--color-bg-darkest); }
+        .punto-madera { height: 10px; width: 10px; background-color: var(--color-wood-medium); border-radius: 50%; margin-right: 15px; min-width: 10px; }
         .hora { font-weight: bold; margin-right: 8px; }
-        .texto-disponible { color: #d1d5db; font-size: 0.9em; }
-        .texto-sillas-disp { font-size: 0.8em; color: #10b981; margin-left: auto; font-weight: bold;}
+        .texto-disponible { color: var(--color-text-sub); font-size: 0.9em; }
+        .texto-sillas-disp { font-size: 0.8em; color: var(--color-wood-medium); margin-left: auto; font-weight: bold;}
 
         /* Vista Turnero */
         .vista-turnero {
-            display: none; background-color: #1e252d; width: 100%; max-width: 900px;
+            display: none; background-color: var(--color-bg-card); width: 100%; max-width: 900px;
             border-radius: 12px; padding: 20px; box-sizing: border-box;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
         .contenedor-grilla {
-            display: flex; overflow-x: auto; background: #1e252d; border: 1px solid #2c3540; 
+            display: flex; overflow-x: auto; background: var(--color-bg-card); border: 1px solid var(--color-border); 
             border-radius: 8px; margin-top: 15px; user-select: none;
         }
         .contenedor-grilla::-webkit-scrollbar { height: 8px; }
-        .contenedor-grilla::-webkit-scrollbar-thumb { background: #44505d; border-radius: 4px; }
+        .contenedor-grilla::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
         
         .tarjeta-reserva-grilla {
-            background-color: #f6a74b; color: #171d24; border-left: 5px solid #d97706; transition: 0.1s;
+            background-color: var(--color-wood-medium); color: var(--color-text-main); border-left: 5px solid var(--color-wood-dark); transition: 0.1s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
         }
         .tarjeta-reserva-grilla:hover { filter: brightness(1.1); }
-        .tarjeta-reserva-grilla.asistio { background-color: #3b82f6; color: #ffffff; border-left: 5px solid #1d4ed8; }
+        .tarjeta-reserva-grilla.asistio { background-color: #4A3020; border-left: 5px solid #332117; color: rgba(255,255,255,0.9); }
         
         .celda-vacia-hover { transition: background-color 0.1s; }
-        .celda-vacia-hover:hover { background-color: rgba(59, 130, 246, 0.15); }
+        .celda-vacia-hover:hover { background-color: rgba(115, 76, 50, 0.15); }
 
-        .mensaje-vacio { color: #9ca3af; text-align: center; margin-top: 20px; width: 100%; }
+        .mensaje-vacio { color: var(--color-text-sub); text-align: center; margin-top: 20px; width: 100%; }
 
         /* Modales */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000;
+            background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000;
         }
         .modal-content {
-            background: #1e252d; padding: 25px; border-radius: 12px; width: 90%; max-width: 360px;
-            display: flex; flex-direction: column; gap: 12px; border: 1px solid #44505d; text-align: center;
+            background: var(--color-bg-card); padding: 25px; border-radius: 12px; width: 90%; max-width: 360px;
+            display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--color-wood-dark); text-align: center;
         }
         .input-form {
-            padding: 10px; border-radius: 6px; border: 1px solid #44505d; background-color: #171d24; 
-            color: white; color-scheme: dark; font-family: inherit; width: 100%; box-sizing: border-box;
+            padding: 10px; border-radius: 6px; border: 1px solid var(--color-border); background-color: var(--color-bg-darkest); 
+            color: white; color-scheme: dark; font-family: inherit; width: 100%; box-sizing: border-box; transition: 0.2s;
         }
+        .input-form:focus { border-color: var(--color-wood-medium); outline: none; }
         .btn-modal { padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 1em; transition: 0.2s; width: 100%; box-sizing: border-box;}
         
-        .btn-whatsapp { background-color: #25D366; color: #171d24; } .btn-whatsapp:hover { background-color: #1DA851; }
-        .btn-guardar { background-color: #10b981; } .btn-guardar:hover { background-color: #059669; }
-        .btn-asistencia { background-color: #3b82f6; } .btn-asistencia:hover { background-color: #2563eb; }
+        /* Botón WhatsApp - Ahora es Marrón Madera */
+        .btn-whatsapp { background-color: var(--color-wood-medium); color: white; } .btn-whatsapp:hover { background-color: var(--color-wood-dark); }
+        .btn-guardar { background-color: var(--color-wood-medium); } .btn-guardar:hover { background-color: var(--color-wood-dark); }
+        .btn-asistencia { background-color: var(--color-wood-medium); } .btn-asistencia:hover { background-color: var(--color-wood-dark); }
         .btn-eliminar { background-color: #ef4444; } .btn-eliminar:hover { background-color: #dc2626; }
-        .btn-cerrar { background-color: #4b5563; margin-top: 10px;}
+        .btn-cerrar { background-color: var(--color-bg-darkest); color: var(--color-text-sub); border: 1px solid var(--color-border); margin-top: 10px;}
+        .btn-cerrar:hover { border-color: var(--color-wood-medium); color: var(--color-text-main); }
 
         .scroll-interno::-webkit-scrollbar { width: 6px; }
-        .scroll-interno::-webkit-scrollbar-thumb { background: #44505d; border-radius: 4px; }
+        .scroll-interno::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -128,8 +149,8 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 style="margin: 0;">Panel de Control</h2>
             <div style="display: flex; gap: 15px;">
-                <button onclick="window.abrirModalMetricas()" style="background: none; border: none; font-size: 1.5em; cursor: pointer; color: #9ca3af; transition: 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#9ca3af'" title="Métricas del Turnero">📊</button>
-                <button onclick="window.abrirModalConfig()" style="background: none; border: none; font-size: 1.5em; cursor: pointer; color: #9ca3af; transition: 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#9ca3af'" title="Configuración del Turnero">⚙️</button>
+                <button onclick="window.abrirModalMetricas()" style="background: none; border: none; font-size: 1.5em; cursor: pointer; color: var(--color-text-sub); transition: 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--color-text-sub)'" title="Métricas del Turnero">📊</button>
+                <button onclick="window.abrirModalConfig()" style="background: none; border: none; font-size: 1.5em; cursor: pointer; color: var(--color-text-sub); transition: 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--color-text-sub)'" title="Configuración del Turnero">⚙️</button>
             </div>
         </div>
         <div id="calendario-turnero" class="calendario-strip"></div>
@@ -138,20 +159,20 @@
 
     <div id="modal-reserva-cliente" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="margin: 0; margin-bottom: 5px;">Confirmar Reserva</h3>
-            <p style="margin: 0; color: #9ca3af; margin-bottom: 15px;">Fecha: <strong id="reserva-fecha-display" style="color:white;"></strong><br>Horario: <strong id="reserva-hora-display" style="color:white;"></strong></p>
+            <h3 style="margin: 0; margin-bottom: 5px; color: var(--color-wood-medium);">Confirmar Reserva</h3>
+            <p style="margin: 0; color: var(--color-text-sub); margin-bottom: 15px;">Fecha: <strong id="reserva-fecha-display" style="color:white;"></strong><br>Horario: <strong id="reserva-hora-display" style="color:white;"></strong></p>
             
             <div style="text-align: left; display: flex; flex-direction: column; gap: 15px;">
                 <div>
-                    <label style="font-size: 0.9em; color: #d1d5db; font-weight: bold;">1. Elige tu silla:</label>
+                    <label style="font-size: 0.9em; color: var(--color-text-sub); font-weight: bold;">1. Elige tu silla:</label>
                     <select id="select-silla-modal" class="input-form" style="margin-top: 5px;"></select>
                 </div>
                 <div>
-                    <label style="font-size: 0.9em; color: #d1d5db; font-weight: bold;">2. Nombre y Apellido:</label>
+                    <label style="font-size: 0.9em; color: var(--color-text-sub); font-weight: bold;">2. Nombre y Apellido:</label>
                     <input type="text" id="input-nombre-cliente" class="input-form" placeholder="Ej: Juan Pérez" style="margin-top: 5px;">
                 </div>
                 <div>
-                    <label style="font-size: 0.9em; color: #d1d5db; font-weight: bold;">3. Teléfono (WhatsApp):</label>
+                    <label style="font-size: 0.9em; color: var(--color-text-sub); font-weight: bold;">3. Teléfono (WhatsApp):</label>
                     <input type="tel" id="input-telefono-cliente" class="input-form" placeholder="Ej: 351..." style="margin-top: 5px;">
                 </div>
             </div>
@@ -163,18 +184,18 @@
 
     <div id="modal-config" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="margin: 0; margin-bottom: 15px; border-bottom: 1px solid #44505d; padding-bottom: 10px;">⚙️ Configuración del Turnero</h3>
+            <h3 style="margin: 0; margin-bottom: 15px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; color: var(--color-wood-medium);">⚙️ Configuración del Turnero</h3>
             <div style="text-align: left; display: flex; flex-direction: column; gap: 15px;">
                 <div style="display: flex; gap: 10px; justify-content: space-between;">
-                    <div style="flex: 1;"><label style="font-size: 0.9em; color: #d1d5db;">Primer Turno:</label><input type="time" id="input-primer-turno" class="input-form" style="margin-top: 4px;"></div>
-                    <div style="flex: 1;"><label style="font-size: 0.9em; color: #d1d5db;">Último Turno:</label><input type="time" id="input-ultimo-turno" class="input-form" style="margin-top: 4px;"></div>
+                    <div style="flex: 1;"><label style="font-size: 0.9em; color: var(--color-text-sub);">Primer Turno:</label><input type="time" id="input-primer-turno" class="input-form" style="margin-top: 4px;"></div>
+                    <div style="flex: 1;"><label style="font-size: 0.9em; color: var(--color-text-sub);">Último Turno:</label><input type="time" id="input-ultimo-turno" class="input-form" style="margin-top: 4px;"></div>
                 </div>
                 <div style="display: flex; gap: 10px; justify-content: space-between;">
-                    <div style="flex: 1;"><label style="font-size: 0.9em; color: #d1d5db;">Precio ($):</label><input type="number" id="input-precio" step="500" class="input-form" style="margin-top: 4px;"></div>
-                    <div style="flex: 1;"><label style="font-size: 0.9em; color: #d1d5db;">Sillas:</label><input type="number" id="input-sillas" min="1" max="20" class="input-form" style="margin-top: 4px;"></div>
+                    <div style="flex: 1;"><label style="font-size: 0.9em; color: var(--color-text-sub);">Precio ($):</label><input type="number" id="input-precio" step="500" class="input-form" style="margin-top: 4px;"></div>
+                    <div style="flex: 1;"><label style="font-size: 0.9em; color: var(--color-text-sub);">Sillas:</label><input type="number" id="input-sillas" min="1" max="20" class="input-form" style="margin-top: 4px;"></div>
                 </div>
                 <div>
-                    <label style="font-size: 0.9em; color: #d1d5db;">Duración Standard:</label>
+                    <label style="font-size: 0.9em; color: var(--color-text-sub);">Duración Standard:</label>
                     <select id="input-duracion" class="input-form" style="margin-top: 4px;">
                         <option value="30">30 Minutos (0.5h)</option>
                         <option value="60">60 Minutos (1h)</option>
@@ -189,7 +210,7 @@
 
     <div id="modal-metricas" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="margin: 0; margin-bottom: 15px; border-bottom: 1px solid #44505d; padding-bottom: 10px;">📊 Métricas de Reservas</h3>
+            <h3 style="margin: 0; margin-bottom: 15px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; color: var(--color-wood-medium);">📊 Métricas de Reservas</h3>
             <div id="contenido-metricas" class="scroll-interno" style="text-align: left; max-height: 350px; overflow-y: auto; padding-right: 5px;"></div>
             <button class="btn-modal btn-cerrar" style="margin-top: 15px;" onclick="window.cerrarModalMetricas()">Cerrar</button>
         </div>
@@ -197,7 +218,7 @@
 
     <div id="modal-acciones" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="margin: 0; margin-bottom: 10px;">Gestionar Turno</h3>
+            <h3 style="margin: 0; margin-bottom: 10px; color: var(--color-wood-medium);">Gestionar Turno</h3>
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <button class="btn-modal btn-asistencia" onclick="window.accionAsistencia()">✔️ Confirmar Asistencia</button>
                 <button class="btn-modal btn-whatsapp" onclick="window.enviarWhatsApp()">💬 Enviar WhatsApp</button>
@@ -333,16 +354,16 @@
 
             const mesesKeys = Object.keys(metricas);
             if(mesesKeys.length === 0) {
-                contenedor.innerHTML = "<p style='color:#9ca3af; text-align:center;'>Aún no hay reservas registradas.</p>";
+                contenedor.innerHTML = "<p style='color:var(--color-text-sub); text-align:center;'>Aún no hay reservas registradas.</p>";
                 return;
             }
 
             mesesKeys.sort().reverse().forEach(mes => {
-                html += `<div style="background:#242c36; padding:15px; border-radius:8px; margin-bottom:15px; border: 1px solid #2c3540;">`;
-                html += `<h4 style="margin:0 0 10px 0; color:#3b82f6; border-bottom:1px solid #44505d; padding-bottom:8px;">📅 ${mes}</h4>`;
-                html += `<div style="text-align: center; background: #171d24; padding: 10px; border-radius: 6px;">
-                            <div style="font-size: 1.8em; font-weight: bold; color: #10b981;">${metricas[mes].total}</div>
-                            <div style="font-size: 0.9em; color: #9ca3af;">Total de Turnos</div>
+                html += `<div style="background:var(--color-bg-darkest); padding:15px; border-radius:8px; margin-bottom:15px; border: 1px solid var(--color-border);">`;
+                html += `<h4 style="margin:0 0 10px 0; color:var(--color-wood-medium); border-bottom:1px solid var(--color-border); padding-bottom:8px;">📅 ${mes}</h4>`;
+                html += `<div style="text-align: center; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px;">
+                            <div style="font-size: 1.8em; font-weight: bold; color: var(--color-text-main);">${metricas[mes].total}</div>
+                            <div style="font-size: 0.9em; color: var(--color-text-sub);">Total de Turnos</div>
                          </div>`;
                 html += `</div>`;
             });
@@ -526,7 +547,7 @@
                     const div = document.createElement('div'); div.className = 'turno-item';
                     div.onclick = () => window.abrirModalReservaCliente(hora);
                     let textoSillas = sillasLibres === 1 ? "1 libre" : `${sillasLibres} libres`;
-                    div.innerHTML = `<span class="punto-verde"></span><span class="hora">${hora} hs | </span><span class="texto-disponible">Turno ${hsTexto} hs</span><span class="texto-sillas-disp">${textoSillas}</span>`;
+                    div.innerHTML = `<span class="punto-madera"></span><span class="hora">${hora} hs | </span><span class="texto-disponible">Turno ${hsTexto} hs</span><span class="texto-sillas-disp">${textoSillas}</span>`;
                     contenedorHorarios.appendChild(div);
                 }
             });
@@ -543,20 +564,20 @@
 
             let htmlGrilla = `<div class="contenedor-grilla">`;
             
-            htmlGrilla += `<div style="width: 55px; flex-shrink: 0; border-right: 1px solid #2c3540; background: #1e252d;">`;
-            htmlGrilla += `<div style="height: 40px; border-bottom: 1px solid #2c3540; background: #242c36;"></div>`; 
+            htmlGrilla += `<div style="width: 55px; flex-shrink: 0; border-right: 1px solid var(--color-border); background: var(--color-bg-darkest);">`;
+            htmlGrilla += `<div style="height: 40px; border-bottom: 1px solid var(--color-border); background: rgba(0,0,0,0.1);"></div>`; 
             for (let m = minActual; m < minFin; m += 30) {
                 let esHoraEnPunto = (m % 60 === 0);
                 let hLabel = Math.floor(m / 60) % 24;
-                let borderStyle = esHoraEnPunto ? 'border-bottom: 1px dashed rgba(255,255,255,0.05);' : 'border-bottom: 1px solid #2c3540;';
+                let borderStyle = esHoraEnPunto ? 'border-bottom: 1px dashed rgba(255,255,255,0.05);' : 'border-bottom: 1px solid var(--color-border);';
                 let texto = esHoraEnPunto ? `${hLabel.toString().padStart(2, '0')}:00` : ``;
-                htmlGrilla += `<div style="height: 40px; ${borderStyle} text-align: center; color: #9ca3af; font-size: 0.8em; padding-top: 3px; box-sizing: border-box;">${texto}</div>`;
+                htmlGrilla += `<div style="height: 40px; ${borderStyle} text-align: center; color: var(--color-text-sub); font-size: 0.8em; padding-top: 3px; box-sizing: border-box;">${texto}</div>`;
             }
             htmlGrilla += `</div>`;
 
             for(let c = 1; c <= cantidadSillasGlobal; c++) {
-                htmlGrilla += `<div style="flex: 1; min-width: 140px; border-right: 1px solid #2c3540; position: relative;">`;
-                htmlGrilla += `<div style="height: 40px; border-bottom: 1px solid #2c3540; text-align: center; line-height: 40px; font-weight: bold; background: #242c36; font-size: 0.9em;">Silla ${c}</div>`;
+                htmlGrilla += `<div style="flex: 1; min-width: 140px; border-right: 1px solid var(--color-border); position: relative;">`;
+                htmlGrilla += `<div style="height: 40px; border-bottom: 1px solid var(--color-border); text-align: center; line-height: 40px; font-weight: bold; background: rgba(0,0,0,0.1); font-size: 0.9em;">Silla ${c}</div>`;
                 
                 let reservasSilla = reservasAMostrar.filter(r => (r.silla || "1") == c);
                 let bloquesOcupadosSilla = new Set();
@@ -575,7 +596,7 @@
                     let mLabel = m % 60;
                     let horaFormateada = `${hLabel.toString().padStart(2, '0')}:${mLabel.toString().padStart(2, '0')}`;
                     
-                    let borderStyle = esHoraEnPunto ? 'border-bottom: 1px dashed rgba(255,255,255,0.05);' : 'border-bottom: 1px solid #2c3540;';
+                    let borderStyle = esHoraEnPunto ? 'border-bottom: 1px dashed rgba(255,255,255,0.05);' : 'border-bottom: 1px solid var(--color-border);';
                     
                     let htmlExtra = "";
                     if (!bloquesOcupadosSilla.has(horaFormateada)) {
@@ -596,17 +617,16 @@
                     let height = (resDur / 30) * 40; 
 
                     let extraClass = res.asistencia ? "asistio" : "";
-                    let colorTexto = res.asistencia ? "white" : "#171d24";
                     
-                    // Modificamos la tarjeta para mostrar el teléfono en lugar del pago
+                    // Tarjeta de Reserva con el nuevo estilo madera
                     htmlGrilla += `
                         <div class="tarjeta-reserva-grilla ${extraClass}" onclick="window.abrirModal('${res.id}')" 
                              style="position: absolute; top: ${offsetTop}px; left: 4px; right: 4px; height: ${height - 6}px; 
                                     padding: 8px; font-size: 0.85em; overflow: hidden; border-radius: 6px; cursor: pointer; 
-                                    box-shadow: 0 4px 6px rgba(0,0,0,0.4); display: flex; flex-direction: column; z-index: 10;">
-                            <span style="font-weight: 900; font-size: 1.1em; color: ${colorTexto}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${res.cliente}</span>
-                            <span style="margin-top: 4px; color: ${colorTexto}; opacity: 0.8; font-weight: 700;">${res.hora} hs</span>
-                            <span style="margin-top: auto; font-size: 0.9em; font-weight: bold; color: ${colorTexto}; opacity: 0.9;">📱 ${res.telefono || 'Sin tel'}</span>
+                                    display: flex; flex-direction: column; z-index: 10;">
+                            <span style="font-weight: 900; font-size: 1.1em; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${res.cliente}</span>
+                            <span style="margin-top: 4px; color: white; opacity: 0.8; font-weight: 700;">${res.hora} hs</span>
+                            <span style="margin-top: auto; font-size: 0.9em; font-weight: bold; color: white; opacity: 0.9;">📱 ${res.telefono || 'Sin tel'}</span>
                         </div>
                     `;
                 });
