@@ -97,12 +97,11 @@
         }
         .btn-modal { padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 1em; transition: 0.2s; width: 100%; box-sizing: border-box;}
         
-        .btn-fijar { background-color: #10b981; } .btn-fijar:hover { background-color: #059669; }
+        .btn-whatsapp { background-color: #25D366; color: #171d24; } .btn-whatsapp:hover { background-color: #1DA851; }
         .btn-guardar { background-color: #10b981; } .btn-guardar:hover { background-color: #059669; }
         .btn-asistencia { background-color: #3b82f6; } .btn-asistencia:hover { background-color: #2563eb; }
         .btn-eliminar { background-color: #ef4444; } .btn-eliminar:hover { background-color: #dc2626; }
         .btn-cerrar { background-color: #4b5563; margin-top: 10px;}
-        .btn-gray-two-col { background-color: #4b5563; flex: 1; } .btn-gray-two-col:hover { background-color: #444c56; }
 
         .scroll-interno::-webkit-scrollbar { width: 6px; }
         .scroll-interno::-webkit-scrollbar-thumb { background: #44505d; border-radius: 4px; }
@@ -151,6 +150,10 @@
                     <label style="font-size: 0.9em; color: #d1d5db; font-weight: bold;">2. Nombre y Apellido:</label>
                     <input type="text" id="input-nombre-cliente" class="input-form" placeholder="Ej: Juan Pérez" style="margin-top: 5px;">
                 </div>
+                <div>
+                    <label style="font-size: 0.9em; color: #d1d5db; font-weight: bold;">3. Teléfono (WhatsApp):</label>
+                    <input type="tel" id="input-telefono-cliente" class="input-form" placeholder="Ej: 351..." style="margin-top: 5px;">
+                </div>
             </div>
 
             <button class="btn-modal btn-guardar" style="margin-top: 20px;" onclick="window.confirmarReservaCliente()">Confirmar Reserva</button>
@@ -187,10 +190,7 @@
     <div id="modal-metricas" class="modal-overlay">
         <div class="modal-content">
             <h3 style="margin: 0; margin-bottom: 15px; border-bottom: 1px solid #44505d; padding-bottom: 10px;">📊 Métricas de Reservas</h3>
-            
-            <div id="contenido-metricas" class="scroll-interno" style="text-align: left; max-height: 350px; overflow-y: auto; padding-right: 5px;">
-            </div>
-
+            <div id="contenido-metricas" class="scroll-interno" style="text-align: left; max-height: 350px; overflow-y: auto; padding-right: 5px;"></div>
             <button class="btn-modal btn-cerrar" style="margin-top: 15px;" onclick="window.cerrarModalMetricas()">Cerrar</button>
         </div>
     </div>
@@ -200,11 +200,7 @@
             <h3 style="margin: 0; margin-bottom: 10px;">Gestionar Turno</h3>
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <button class="btn-modal btn-asistencia" onclick="window.accionAsistencia()">✔️ Confirmar Asistencia</button>
-                <button class="btn-modal btn-fijar" id="btn-toggle-fijo" onclick="window.accionFijarTurno()">📌 Fijar Turno</button>
-                <div style="display: flex; gap: 10px; justify-content: space-between;">
-                    <button class="btn-modal btn-gray-two-col" onclick="window.accionPago()">✅ Pagado</button>
-                    <button class="btn-modal btn-gray-two-col" onclick="window.accionNoPago()">❌ Pendiente</button>
-                </div>
+                <button class="btn-modal btn-whatsapp" onclick="window.enviarWhatsApp()">💬 Enviar WhatsApp</button>
                 <button class="btn-modal btn-eliminar" onclick="window.accionEliminar()">🗑️ Eliminar Reserva</button>
                 <button class="btn-modal btn-cerrar" onclick="window.cerrarModalAcciones()">Cancelar</button>
             </div>
@@ -303,15 +299,6 @@
         
         window.abrirModal = function(id) { 
             reservaSeleccionadaId = id; 
-            const res = reservasGlobales.find(r => r.id === id);
-            const btnFijar = document.getElementById('btn-toggle-fijo');
-            if(res && res.fijo) {
-                btnFijar.innerHTML = "📌 Quitar Turno Fijo";
-                btnFijar.style.backgroundColor = "#4b5563"; 
-            } else {
-                btnFijar.innerHTML = "📌 Fijar Turno";
-                btnFijar.style.backgroundColor = "#10b981"; 
-            }
             document.getElementById('modal-acciones').style.display = 'flex'; 
         }
         window.cerrarModalAcciones = function() { reservaSeleccionadaId = null; document.getElementById('modal-acciones').style.display = 'none'; }
@@ -333,26 +320,12 @@
                 const partes = r.fecha.split('-'); 
                 const anio = partes[0];
                 const mesNum = parseInt(partes[1], 10);
-                const dia = parseInt(partes[2], 10);
-
                 const mesTexto = `${mesesNombres[mesNum - 1]} ${anio}`;
-                const semanaNum = Math.ceil(dia / 7); 
-                const semanaTexto = `Semana ${semanaNum}`;
 
                 if(!metricas[mesTexto]) {
-                    metricas[mesTexto] = { totalFijos: 0, totalCasuales: 0, semanas: {} };
+                    metricas[mesTexto] = { total: 0 };
                 }
-                if(!metricas[mesTexto].semanas[semanaTexto]) {
-                    metricas[mesTexto].semanas[semanaTexto] = { fijos: 0, casuales: 0 };
-                }
-
-                if(r.fijo) {
-                    metricas[mesTexto].totalFijos++;
-                    metricas[mesTexto].semanas[semanaTexto].fijos++;
-                } else {
-                    metricas[mesTexto].totalCasuales++;
-                    metricas[mesTexto].semanas[semanaTexto].casuales++;
-                }
+                metricas[mesTexto].total++;
             });
 
             const contenedor = document.getElementById('contenido-metricas');
@@ -367,28 +340,10 @@
             mesesKeys.sort().reverse().forEach(mes => {
                 html += `<div style="background:#242c36; padding:15px; border-radius:8px; margin-bottom:15px; border: 1px solid #2c3540;">`;
                 html += `<h4 style="margin:0 0 10px 0; color:#3b82f6; border-bottom:1px solid #44505d; padding-bottom:8px;">📅 ${mes}</h4>`;
-                html += `<div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                            <div style="flex: 1; background: #171d24; padding: 10px; border-radius: 6px; text-align: center;">
-                                <div style="font-size: 1.5em; font-weight: bold; color: #10b981;">${metricas[mes].totalCasuales}</div>
-                                <div style="font-size: 0.8em; color: #9ca3af;">Casuales</div>
-                            </div>
-                            <div style="flex: 1; background: #171d24; padding: 10px; border-radius: 6px; text-align: center;">
-                                <div style="font-size: 1.5em; font-weight: bold; color: #f59e0b;">${metricas[mes].totalFijos}</div>
-                                <div style="font-size: 0.8em; color: #9ca3af;">Fijos 📌</div>
-                            </div>
+                html += `<div style="text-align: center; background: #171d24; padding: 10px; border-radius: 6px;">
+                            <div style="font-size: 1.8em; font-weight: bold; color: #10b981;">${metricas[mes].total}</div>
+                            <div style="font-size: 0.9em; color: #9ca3af;">Total de Turnos</div>
                          </div>`;
-
-                html += `<p style="font-size: 0.85em; color: #d1d5db; margin: 0 0 8px 0; font-weight: bold;">Desglose Semanal:</p>`;
-                
-                const semanasKeys = Object.keys(metricas[mes].semanas).sort();
-                semanasKeys.forEach(sem => {
-                    let datos = metricas[mes].semanas[sem];
-                    html += `<div style="display:flex; justify-content:space-between; font-size:0.85em; color:#9ca3af; margin-bottom:6px; padding-left:5px; border-left: 2px solid #44505d;">
-                                <span style="padding-left: 8px;">${sem}</span>
-                                <span><strong style="color: #10b981;">${datos.casuales}</strong> Cas. / <strong style="color: #f59e0b;">${datos.fijos}</strong> Fij.</span>
-                             </div>`;
-                });
-                
                 html += `</div>`;
             });
 
@@ -396,7 +351,6 @@
         }
 
         window.abrirModalReservaCliente = function(hora, sillaPredeterminada = null) {
-            
             let minInicio = window.aMinutos(hora);
             let minUltimo = window.aMinutos(ultimoTurno);
             if (minInicio > minUltimo) {
@@ -410,7 +364,6 @@
             document.getElementById('reserva-fecha-display').innerText = `${f.getDate()}/${f.getMonth() + 1}/${f.getFullYear()}`;
             document.getElementById('reserva-hora-display').innerText = `${hora} hs (${duracionGlobal/60}h)`;
 
-            const dowNumSelected = window.getDayOfWeekFromDate(fechaSeleccionada);
             const numBloquesNuevo = duracionGlobal / 30;
             let bloquesNuevos = [];
             for(let b=0; b < numBloquesNuevo; b++) { bloquesNuevos.push(window.sumarMinutos(hora, b * 30)); }
@@ -418,11 +371,7 @@
             let sillasOcupadas = new Set();
             
             reservasGlobales.forEach(r => {
-                let aplica = false;
-                if ((r.fecha || fechasValidas[0]) === fechaSeleccionada) aplica = true;
-                if (r.fijo === true && window.getDayOfWeekFromDate(r.fecha) === dowNumSelected) aplica = true;
-
-                if (aplica) {
+                if ((r.fecha || fechasValidas[0]) === fechaSeleccionada) {
                     let resDuracion = r.duracion || 60;
                     let numBloquesRes = resDuracion / 30;
                     let bloquesRes = [];
@@ -453,6 +402,7 @@
             }
 
             document.getElementById('input-nombre-cliente').value = ""; 
+            document.getElementById('input-telefono-cliente').value = ""; 
             document.getElementById('modal-reserva-cliente').style.display = 'flex';
         }
 
@@ -460,15 +410,18 @@
 
         window.confirmarReservaCliente = async function() {
             const inputNombre = document.getElementById('input-nombre-cliente').value;
+            const inputTelefono = document.getElementById('input-telefono-cliente').value;
             const selectSillaModal = document.getElementById('select-silla-modal').value;
 
             if (!inputNombre || inputNombre.trim() === "") { alert("Por favor, ingresa tu Nombre y Apellido."); return; }
+            if (!inputTelefono || inputTelefono.trim() === "") { alert("Por favor, ingresa un número de teléfono."); return; }
 
             try {
                 await addDoc(collection(db, "reservas"), { 
-                    fecha: fechaSeleccionada, hora: reservaEnProcesoHora, silla: selectSillaModal, cliente: inputNombre, 
+                    fecha: fechaSeleccionada, hora: reservaEnProcesoHora, silla: selectSillaModal, 
+                    cliente: inputNombre, telefono: inputTelefono,
                     duracion: duracionGlobal, 
-                    fechaRegistro: new Date(), asistencia: false, pagado: false, fijo: false      
+                    fechaRegistro: new Date(), asistencia: false
                 });
                 alert("¡Reserva guardada con éxito!");
                 window.cerrarModalReservaCliente();
@@ -496,16 +449,24 @@
         }
 
         window.accionAsistencia = async function() { if(reservaSeleccionadaId) { await updateDoc(doc(db, "reservas", reservaSeleccionadaId), { asistencia: true }); window.cerrarModalAcciones(); } }
-        window.accionPago = async function() { if(reservaSeleccionadaId) { await updateDoc(doc(db, "reservas", reservaSeleccionadaId), { pagado: true }); window.cerrarModalAcciones(); } }
-        window.accionNoPago = async function() { if(reservaSeleccionadaId) { await updateDoc(doc(db, "reservas", reservaSeleccionadaId), { pagado: false }); window.cerrarModalAcciones(); } }
         window.accionEliminar = async function() { if(reservaSeleccionadaId && confirm("¿Estás seguro de borrar esta reserva?")) { await deleteDoc(doc(db, "reservas", reservaSeleccionadaId)); window.cerrarModalAcciones(); } }
         
-        window.accionFijarTurno = async function() { 
+        window.enviarWhatsApp = function() {
             if(reservaSeleccionadaId) {
                 const res = reservasGlobales.find(r => r.id === reservaSeleccionadaId);
-                const nuevoEstado = !(res.fijo === true); 
-                await updateDoc(doc(db, "reservas", reservaSeleccionadaId), { fijo: nuevoEstado });
-                window.cerrarModalAcciones();
+                if(res && res.telefono) {
+                    let telFormateado = res.telefono.replace(/[^0-9+]/g, '');
+                    let partesFecha = res.fecha.split('-');
+                    let fechaAmigable = `${partesFecha[2]}/${partesFecha[1]}`;
+                    
+                    let mensaje = `Hola ${res.cliente}, te contactamos para confirmar tu turno el día ${fechaAmigable} a las ${res.hora} hs.`;
+                    let url = `https://wa.me/${telFormateado}?text=${encodeURIComponent(mensaje)}`;
+                    
+                    window.open(url, '_blank');
+                    window.cerrarModalAcciones();
+                } else {
+                    alert("Esta reserva no tiene un número de teléfono válido.");
+                }
             }
         }
 
@@ -537,7 +498,6 @@
             const contenedorHorarios = document.getElementById('lista-horarios');
             contenedorHorarios.innerHTML = '';
             
-            const dowNumSelected = window.getDayOfWeekFromDate(fechaSeleccionada);
             const horariosFiltrados = horariosBase.filter(h => h >= primerTurno && h <= ultimoTurno);
             const numBloquesNuevo = duracionGlobal / 30;
 
@@ -548,11 +508,7 @@
                 let sillasOcupadas = new Set();
                 
                 reservasGlobales.forEach(r => {
-                    let aplica = false;
-                    if ((r.fecha || fechasValidas[0]) === fechaSeleccionada) aplica = true;
-                    if (r.fijo === true && window.getDayOfWeekFromDate(r.fecha) === dowNumSelected) aplica = true;
-
-                    if(aplica) {
+                    if ((r.fecha || fechasValidas[0]) === fechaSeleccionada) {
                         let resDuracion = r.duracion || 60;
                         let numBloquesRes = resDuracion / 30;
                         let bloquesRes = [];
@@ -579,11 +535,7 @@
             const contenedorTurnero = document.getElementById('lista-reservas-turnero');
             contenedorTurnero.innerHTML = '';
 
-            const dowNumSelectedTurnero = window.getDayOfWeekFromDate(fechaSeleccionada);
-            let reservasAMostrar = reservasGlobales.filter(r => {
-                let fechaReserva = r.fecha || fechasValidas[0];
-                return fechaReserva === fechaSeleccionada || (r.fijo === true && window.getDayOfWeekFromDate(r.fecha) === dowNumSelectedTurnero);
-            });
+            let reservasAMostrar = reservasGlobales.filter(r => (r.fecha || fechasValidas[0]) === fechaSeleccionada);
 
             let minActual = window.aMinutos(primerTurno);
             let minFin = window.aMinutos(ultimoTurno) + duracionGlobal; 
@@ -645,17 +597,16 @@
 
                     let extraClass = res.asistencia ? "asistio" : "";
                     let colorTexto = res.asistencia ? "white" : "#171d24";
-                    let textoSaldo = res.pagado ? "✅" : "Pend";
-                    let textoFijo = res.fijo === true ? ' 📌' : '';
                     
+                    // Modificamos la tarjeta para mostrar el teléfono en lugar del pago
                     htmlGrilla += `
                         <div class="tarjeta-reserva-grilla ${extraClass}" onclick="window.abrirModal('${res.id}')" 
                              style="position: absolute; top: ${offsetTop}px; left: 4px; right: 4px; height: ${height - 6}px; 
                                     padding: 8px; font-size: 0.85em; overflow: hidden; border-radius: 6px; cursor: pointer; 
                                     box-shadow: 0 4px 6px rgba(0,0,0,0.4); display: flex; flex-direction: column; z-index: 10;">
-                            <span style="font-weight: 900; font-size: 1.1em; color: ${colorTexto}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${res.cliente}${textoFijo}</span>
+                            <span style="font-weight: 900; font-size: 1.1em; color: ${colorTexto}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${res.cliente}</span>
                             <span style="margin-top: 4px; color: ${colorTexto}; opacity: 0.8; font-weight: 700;">${res.hora} hs</span>
-                            <span style="margin-top: auto; font-weight: bold; color: ${colorTexto};">Pago: ${textoSaldo}</span>
+                            <span style="margin-top: auto; font-size: 0.9em; font-weight: bold; color: ${colorTexto}; opacity: 0.9;">📱 ${res.telefono || 'Sin tel'}</span>
                         </div>
                     `;
                 });
